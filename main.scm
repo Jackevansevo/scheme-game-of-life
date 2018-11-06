@@ -17,10 +17,6 @@
 (define (next board)
   (evolve board))
 
-(define (map-indexed fn lst)
-  (let ((indexed (map cons (enumerate lst) lst)))
-    (map fn indexed)))
-
 (define (identity i) i)
 
 (define (evolve board)
@@ -34,7 +30,7 @@
                    (or (>= x x-len) (>= y y-len))))
         (list-ref (list-ref board y) x)))
 
-   (define (count-neighbors x y)
+   (define (evolve-cell x y)
      (let* ((adjacent 
               (list (get-cell (+ x 1) y)
                     (get-cell (- x 1) y)
@@ -43,16 +39,7 @@
             (neighbors (length (filter identity adjacent))))
        (or (= neighbors 3) (and (= neighbors 2) (get-cell x y)))))
 
-   (define (count-row pair)
+   (define (evolve-row y)
+     (map (lambda (x) (evolve-cell x y)) (iota y-len)))
 
-     (let ((y (car pair))
-           (value (cdr pair)))
-
-       (define (count-col pair)
-         (let ((x (car pair))
-               (alive? (cdr pair)))
-           (count-neighbors x y)))
-
-       (map-indexed count-col value)))
-
-   (map-indexed count-row board)))
+   (map evolve-row (iota x-len))))
